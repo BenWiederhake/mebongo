@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 
+mod board;
 mod tile;
 
 fn main() {
@@ -32,4 +33,6 @@ fn main() {
             }
         }
     }
+    let b = board::Board::all_blocked();
+    println!("{:?} is all_blocked {}", &b, b.is_all_blocked());
 }
