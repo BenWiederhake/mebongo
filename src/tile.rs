@@ -130,3 +130,22 @@ lazy_static! {
         Tile::new(vec![0x0133, 0x0073, 0x0332, 0x0067, 0x0233, 0x0037, 0x0331, 0x0076]),
     ];
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn test_layouts_are_unique() {
+        let layout_bits = ALL_TILES
+            .iter()
+            .flat_map(|t| t.get_layouts())
+            .map(|l| l.bit_data)
+            .collect::<Vec<_>>();
+        println!("{:?}", layout_bits);
+        let layout_bits_dedup = layout_bits.iter().copied().collect::<HashSet<_>>();
+        println!("{:?}", layout_bits_dedup);
+        assert_eq!(layout_bits.len(), layout_bits_dedup.len());
+    }
+}
