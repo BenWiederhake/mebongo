@@ -32,6 +32,11 @@ impl TileLayout {
         let offset = x + y * MAX_SIZE;
         0 != (self.bit_data & (1 << offset))
     }
+
+    #[cfg(test)]
+    pub fn new_for_test(bit_data: u16) -> TileLayout {
+        TileLayout { bit_data }
+    }
 }
 
 lazy_static! {
