@@ -4,6 +4,7 @@ extern crate lazy_static;
 extern crate static_assertions;
 
 mod board;
+mod search;
 mod tile;
 
 fn main() {

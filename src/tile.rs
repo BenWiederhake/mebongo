@@ -16,6 +16,11 @@ impl Tile {
         }
     }
 
+    #[cfg(test)]
+    pub fn new_for_test(layouts_raw: Vec<u16>) -> Tile {
+        Tile::new(layouts_raw)
+    }
+
     pub fn get_layouts(&self) -> &[TileLayout] {
         &self.layouts
     }
