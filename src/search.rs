@@ -82,7 +82,6 @@ pub type Result = Vec<Operation>;
 
 impl<'a> State<'a> {
     pub fn new(initial_board: Board, tiles: &'a [Tile]) -> Self {
-        assert!(tiles.len() > 0 && tiles.len() < 256);
         Self {
             closed: vec![],
             open: vec![Node::new_root(initial_board)],
@@ -228,6 +227,17 @@ mod tests {
         );
         // Will generate many more solutions, one for each possible offset.
         assert!(s.can_step());
+    }
+
+    #[test]
+    fn test_notiles_positive() {
+        let tiles: Vec<_> = vec![];
+        let mut s = State::new(Board::all_blocked(), &tiles);
+        assert_eq!(s.closed.len(), 0);
+        assert_eq!(s.open.len(), 1);
+        assert!(s.can_step());
+        assert_eq!(s.step_single(), Some(vec![]));
+        assert!(!s.can_step());
     }
 
     #[test]

@@ -12,6 +12,7 @@ pub struct Board {
 }
 
 impl Board {
+    #[cfg(test)]
     pub fn all_blocked() -> Board {
         Board { bit_data: 0 }
     }
@@ -20,10 +21,6 @@ impl Board {
         let board_size = MAX_WIDTH * MAX_HEIGHT;
         assert_eq!(0, encoded & !((1 << board_size) - 1));
         Board { bit_data: encoded }
-    }
-
-    pub fn is_all_blocked(&self) -> bool {
-        self.bit_data == 0
     }
 
     fn index_mask(x: u8, y: u8) -> BitType {
@@ -46,6 +43,7 @@ impl Board {
         self.bit_data &= !Self::index_mask(x, y);
     }
 
+    #[cfg(test)]
     pub fn set_unblocked(&mut self, x: u8, y: u8) {
         self.bit_data |= Self::index_mask(x, y);
     }
@@ -86,7 +84,6 @@ mod tests {
     fn test_basic_all_blocked() {
         let b = Board::all_blocked();
         assert_eq!(b.bit_data, 0);
-        assert!(b.is_all_blocked());
     }
 
     #[test]
@@ -94,7 +91,6 @@ mod tests {
         let mut b = Board::all_blocked();
         b.set_blocked(0, 0);
         assert_eq!(b.bit_data, 0);
-        assert!(b.is_all_blocked());
     }
 
     #[test]
@@ -102,20 +98,16 @@ mod tests {
         let mut b = Board::all_blocked();
         b.set_unblocked(0, 0);
         assert_eq!(b.bit_data, 1);
-        assert!(!b.is_all_blocked());
         b.set_unblocked(0, 2);
         // This assumes MAX_WIDTH == 5:
         let mask_0_2 = 0x400;
         assert_eq!(b.bit_data, 1 + mask_0_2);
-        assert!(!b.is_all_blocked());
         // Test idempotency
         b.set_unblocked(0, 2);
         assert_eq!(b.bit_data, 1 + mask_0_2);
-        assert!(!b.is_all_blocked());
         // Test set_blocked
         b.set_blocked(0, 0);
         assert_eq!(b.bit_data, mask_0_2);
-        assert!(!b.is_all_blocked());
     }
 
     #[test]
