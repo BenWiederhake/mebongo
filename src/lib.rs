@@ -196,7 +196,7 @@ mod tests {
             //     ····· MSB
             compute_result(0x062, 0x000779E6, 100),
             Result::new(
-                22,
+                13,
                 true,
                 false,
                 [
@@ -223,7 +223,7 @@ mod tests {
             //     ····· MSB
             compute_result(0x062, 0x000779E5, 100),
             Result::new(
-                17,
+                12,
                 false,
                 true,
                 [

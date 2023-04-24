@@ -1,5 +1,5 @@
 use crate::board::{self, Board};
-use crate::tile::Tile;
+use crate::tile::{self, Tile};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct IndexedTileLayout {
@@ -135,9 +135,15 @@ impl<'a> State<'a> {
         }
         let next_parent_index = self.closed.len();
 
+        let mut dead_cells = node.board.clone();
+        let mut remaining_tile_cells = 0;
+
         // Now search for the tile which has the fewest places it can possibly go:
         let best_case_distinction = remaining_tile_indices
             .iter()
+            .inspect(|&&tile_index| {
+                remaining_tile_cells += &self.tiles[tile_index as usize].get_size();
+            })
             .map(|&tile_index| {
                 node.find_all_fits(
                     next_parent_index,
@@ -145,12 +151,35 @@ impl<'a> State<'a> {
                     tile_index,
                 )
             })
+            .inspect(|case_distinction| {
+                if dead_cells.count_unblocked() == 0 {
+                    return; // no dead cells anymore
+                }
+                for node in case_distinction {
+                    let operation = &node.operation_and_parent_index.as_ref().unwrap().0;
+                    let tile_layout = &self.tiles
+                        [operation.indexed_tile_layout.tile_index as usize]
+                        .get_layouts()
+                        [operation.indexed_tile_layout.layout_index as usize];
+                    for y in 0..tile::MAX_SIZE {
+                        for x in 0..tile::MAX_SIZE {
+                            if !tile_layout.is_present_at(x, y) {
+                                continue;
+                            }
+                            dead_cells.set_blocked(x + operation.dx, y + operation.dy);
+                        }
+                    }
+                }
+            })
             .min_by_key(|case_distinction| case_distinction.len())
-            .expect("List of available tiles is suddenly empty?!");
-        // TODO: Short-circuit when a 0 has been found?
+            .unwrap();
 
         if best_case_distinction.len() == 0 {
             // There is a tile which cannot be placed, therefore we don't need to consider this subtree at all.
+            return None;
+        }
+        if remaining_tile_cells + dead_cells.count_unblocked() > node.board.count_unblocked() {
+            // Any solution stemming from 'node' would take up more space than exists.
             return None;
         }
 
@@ -181,7 +210,6 @@ impl<'a> State<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tile;
 
     #[test]
     fn test_basic_negative() {
@@ -196,7 +224,7 @@ mod tests {
 
     #[test]
     fn test_basic_positive() {
-        let tiles: Vec<_> = vec![Tile::new_for_test(vec![0xFFFF, 0x0001])];
+        let tiles: Vec<_> = vec![Tile::new_for_test(vec![0x8000, 0x0001])];
         let mut board = Board::all_blocked();
         board.set_unblocked(2, 3);
         let mut s = State::new(board, &tiles);
@@ -242,7 +270,7 @@ mod tests {
 
     #[test]
     fn test_basic_positive_multi() {
-        let tiles: Vec<_> = vec![Tile::new_for_test(vec![0xFFFF, 0x0001])];
+        let tiles: Vec<_> = vec![Tile::new_for_test(vec![0x8000, 0x0001])];
         let mut board = Board::all_blocked();
         board.set_unblocked(2, 3);
         let mut s = State::new(board, &tiles);
@@ -312,7 +340,7 @@ mod tests {
         assert_eq!(
             s.step_at_most(1000),
             (
-                22,
+                13,
                 Some(vec![
                     Operation::from(0, 1, 2, 0),
                     Operation::from(1, 1, 2, 2),
@@ -353,7 +381,7 @@ mod tests {
         // (3,3) missing, and (0,0) doesn't help.
         board.set_unblocked(0, 0);
         let mut s = State::new(board, &tiles);
-        assert_eq!(s.step_at_most(1000), (29, None));
+        assert_eq!(s.step_at_most(1000), (15, None));
         assert!(!s.can_step());
     }
 }

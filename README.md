@@ -29,26 +29,24 @@ Note that there are a lot of tests, to make sure everything is consistent (`carg
 
 ## Performance
 
-"Easy" and "hard" puzzles from the Ubongo game are usually solved instantly, taking less than 200 DFS steps, usually even below 50.
+"Easy" and "hard" puzzles from the Ubongo game are usually solved instantly, taking less than 100 DFS steps, usually far below 50.
 This means that performance does not really matter too much.
 
 The maximum number of steps is hardcoded in the JavaScript code as
 `const MAX_STEPS = 10000;`. This seems to be equivalent to about 50ms on my computer.
 I expect that this is a good upper bound with mobile devices in mind.
 
-Using the maximum amount of pieces and an impossible configuration, this limit can indeed be exceeded:
+I couldn't find any input that would exceed this:
 
-[![Screenshot of a nearly-full 5×6 board, with one cell seemingly pinched-off, therefore impossible to fill.](screenshots/02.png)](https://benwiederhake.github.io/mebongo/)
+[![Screenshot of a nearly-full 5×6 board, with three hard-to-fill cells, proven as impossible after 395 steps.](screenshots/02.png)](https://benwiederhake.github.io/mebongo/)
 
-However, for these cases it seems that even 100k DFS steps are not enough, so
-I'll leave it at 10k, and I don't really think more performance would help
+So I'll leave the limit at 10k, and I don't really think more performance would help
 anything. If you're reading this, pease consider making the website more responsive (for mobile screen sizes) instead.
 
 There are multiple places that can easily be sped up:
 - It's too easy to accidentally drag a page element (thereby not clicking it), or miss the label of the tile checkboxes. This gives the *impression* that the page is too slow to register an input. This should be fixed.
 - I'm pretty sure that the tail of `search::State::closed` can be dropped at the indicated time in `State::step_single`, but I didn't think about it too hard yet.
 - The tile and tile-layout orders imply search preferences. Does this need any tweaking?
-- It seems that "impossible" puzzles are the slowest by far. Is there anything that mebongo can do to identify these cases or "learn" certain impossibilities? Would it be sufficient to check whether all cells can individually be covered, i.e. check that there are fewer "impossible" cells than we have to spare?
 
 ## TODOs
 

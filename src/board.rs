@@ -30,6 +30,10 @@ impl Board {
         1 << index
     }
 
+    pub fn count_unblocked(&self) -> u32 {
+        self.bit_data.count_ones()
+    }
+
     #[cfg(test)]
     pub fn index_mask_for_test(x: u8, y: u8) -> BitType {
         Self::index_mask(x, y)

@@ -8,17 +8,24 @@ pub struct Tile {
 
 impl Tile {
     fn new(layouts_raw: Vec<u16>) -> Tile {
-        Tile {
+        let tile = Tile {
             layouts: layouts_raw
                 .into_iter()
                 .map(|bit_data| TileLayout { bit_data })
                 .collect(),
-        }
+        };
+        let size = tile.layouts[0].size();
+        debug_assert!(tile.layouts.iter().all(|l| l.size() == size));
+        tile
     }
 
     #[cfg(test)]
     pub fn new_for_test(layouts_raw: Vec<u16>) -> Tile {
         Tile::new(layouts_raw)
+    }
+
+    pub fn get_size(&self) -> u32 {
+        self.layouts[0].size()
     }
 
     pub fn get_layouts(&self) -> &[TileLayout] {
@@ -41,6 +48,10 @@ impl TileLayout {
     #[cfg(test)]
     pub fn new_for_test(bit_data: u16) -> TileLayout {
         TileLayout { bit_data }
+    }
+
+    fn size(&self) -> u32 {
+        self.bit_data.count_ones()
     }
 }
 
