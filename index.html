@@ -3,54 +3,28 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <style>
-.board-input ~ .board-display {
-  background-image: url("square_black.png");
-  background-size: contain;
-  width: 60px;
-  height: 60px;
-}
-.board-input:checked ~ .board-display {
-  background-image: url("square_white.png");
-}
-.board-display {
-  display: block;
-}
-.tile-preview {
-  width: 30px;
-  height: 30px;
-}
-.board-output {
-  width: 60px;
-  height: 60px;
-}
-.tile-254 { background-image: url("square_white.png"); background-size: contain; }
-.tile-255 { background-image: url("square_black.png"); background-size: contain; }
-.tile-0   { background-image: url("square_col_00.png"); background-size: contain; }
-.tile-1   { background-image: url("square_col_01.png"); background-size: contain; }
-.tile-2   { background-image: url("square_col_02.png"); background-size: contain; }
-.tile-3   { background-image: url("square_col_03.png"); background-size: contain; }
-.tile-4   { background-image: url("square_col_04.png"); background-size: contain; }
-.tile-5   { background-image: url("square_col_05.png"); background-size: contain; }
-.tile-6   { background-image: url("square_col_06.png"); background-size: contain; }
-.tile-7   { background-image: url("square_col_07.png"); background-size: contain; }
-.tile-8   { background-image: url("square_col_08.png"); background-size: contain; }
-.tile-9   { background-image: url("square_col_09.png"); background-size: contain; }
-.tile-10  { background-image: url("square_col_10.png"); background-size: contain; }
-.tile-11  { background-image: url("square_col_11.png"); background-size: contain; }
-.visually-hidden {
-  position: absolute;
-  opacity: 0%;
-}
-table, tr, td {
-  padding: 0;
-  border-spacing: 0;
-}
-label.tile-display {
-  display: inline-block;
-  vertical-align: middle;
-  margin-top: 3px;
-  margin-bottom: 3px;
-}
+.inb{position:absolute;opacity:0%;}
+.inb~label{background-image: url("square_black.png");background-size:contain;
+  width:60px;height:60px;display:block;}
+.inb:checked~label{background-image:url("square_white.png");}
+.tpr{width:30px;height: 30px;}
+.int{display:inline-block;vertical-align:middle;margin-top:3px;margin-bottom:3px;}
+.bo{width:60px;height:60px;}
+.c254{background-image:url("square_white.png");background-size:contain;}
+.c255{background-image:url("square_black.png");background-size:contain;}
+.c0{background-image:url("square_col_00.png");background-size:contain;}
+.c1{background-image:url("square_col_01.png");background-size:contain;}
+.c2{background-image:url("square_col_02.png");background-size:contain;}
+.c3{background-image:url("square_col_03.png");background-size:contain;}
+.c4{background-image:url("square_col_04.png");background-size:contain;}
+.c5{background-image:url("square_col_05.png");background-size:contain;}
+.c6{background-image:url("square_col_06.png");background-size:contain;}
+.c7{background-image:url("square_col_07.png");background-size:contain;}
+.c8{background-image:url("square_col_08.png");background-size:contain;}
+.c9{background-image:url("square_col_09.png");background-size:contain;}
+.c10{background-image:url("square_col_10.png");background-size:contain;}
+.c11{background-image:url("square_col_11.png");background-size:contain;}
+table,tr,td{padding:0;border-spacing:0;}
 </style>
 </head>
 <body><center>
@@ -60,9 +34,9 @@ label.tile-display {
 <table>
 <tr>
   <th id="input-tiles-label">Loading …</th>
-  <th style="width: 3rem;"><!-- Disgusting spacer --></th>
+  <th style="width: 3rem;"></th>
   <th id="input-board-label">Loading …</th>
-  <th style="width: 3rem;"><!-- Disgusting spacer --></th>
+  <th style="width: 3rem;"></th>
   <th><span id="output-label">Loading …</span><br/><span id="output-label-small" class="tiny">Loading …</span></th>
 </tr>
 <tr></tr>
@@ -70,56 +44,56 @@ label.tile-display {
 
 <table>
 <tr>
-<td><div><input type="checkbox" id="tile_0" class="tile-input"><label for="tile_0" class="tile-display"><table>
-<tr><td class="tile-preview tile-0"></td><td class="tile-preview tile-0"></td></tr>
-<tr><td class="tile-preview tile-0"></td><td class="tile-preview tile-0"></td></tr>
+<td><div><input type="checkbox" id="t0"><label class="int" for="tile_0"><table>
+<tr><td class="tpr c0"></td><td class="tpr c0"></td></tr>
+<tr><td class="tpr c0"></td><td class="tpr c0"></td></tr>
 </table></label></div></td>
-<td><div><input type="checkbox" id="tile_1" class="tile-input"><label for="tile_1" class="tile-display"><table>
-<tr><td class="tile-preview tile-1"></td></td><td class="tile-preview tile-1"></td></tr>
-</table></label></div></td>
-</tr><tr>
-<td><div><input type="checkbox" id="tile_2" class="tile-input"><label for="tile_2" class="tile-display"><table>
-<tr><td class="tile-preview tile-2"></td><td class="tile-preview tile-2"></td><td class="tile-preview tile-2"></td></tr>
-</table></label></div></td>
-<td><div><input type="checkbox" id="tile_3" class="tile-input"><label for="tile_3" class="tile-display"><table>
-<tr><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td></tr>
+<td><div><input type="checkbox" id="t1"><label class="int" for="tile_1"><table>
+<tr><td class="tpr c1"></td></td><td class="tpr c1"></td></tr>
 </table></label></div></td>
 </tr><tr>
-<td><div><input type="checkbox" id="tile_4" class="tile-input"><label for="tile_4" class="tile-display"><table>
-<tr><td class="tile-preview tile-4"></td><td class="tile-preview tile-4"></td></tr>
-<tr><td class="tile-preview       "></td><td class="tile-preview tile-4"></td></tr>
+<td><div><input type="checkbox" id="t2"><label class="int" for="tile_2"><table>
+<tr><td class="tpr c2"></td><td class="tpr c2"></td><td class="tpr c2"></td></tr>
 </table></label></div></td>
-<td><div><input type="checkbox" id="tile_5" class="tile-input"><label for="tile_5" class="tile-display"><table>
-<tr><td class="tile-preview tile-5"></td><td class="tile-preview tile-5"></td><td class="tile-preview tile-5"></td></tr>
-<tr><td class="tile-preview       "></td><td class="tile-preview tile-5"></td><td class="tile-preview       "></td></tr>
+<td><div><input type="checkbox" id="t3"><label class="int" for="tile_3"><table>
+<tr><td class="tpr c3"></td><td class="tpr c3"></td><td class="tpr c3"></td><td class="tpr c3"></td></tr>
 </table></label></div></td>
 </tr><tr>
-<td><div><input type="checkbox" id="tile_6" class="tile-input"><label for="tile_6" class="tile-display"><table>
-<tr><td class="tile-preview tile-6"></td><td class="tile-preview tile-6"></td><td class="tile-preview       "></td></tr>
-<tr><td class="tile-preview       "></td><td class="tile-preview tile-6"></td><td class="tile-preview tile-6"></td></tr>
+<td><div><input type="checkbox" id="t4"><label class="int" for="tile_4"><table>
+<tr><td class="tpr c4"></td><td class="tpr c4"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c4"></td></tr>
 </table></label></div></td>
-<td><div><input type="checkbox" id="tile_7" class="tile-input"><label for="tile_7" class="tile-display"><table>
-<tr><td class="tile-preview tile-7"></td><td class="tile-preview tile-7"></td><td class="tile-preview       "></td></tr>
-<tr><td class="tile-preview       "></td><td class="tile-preview tile-7"></td><td class="tile-preview       "></td></tr>
-<tr><td class="tile-preview       "></td><td class="tile-preview tile-7"></td><td class="tile-preview tile-7"></td></tr>
-</table></label></div></td>
-</tr><tr>
-<td><div><input type="checkbox" id="tile_8" class="tile-input"><label for="tile_8" class="tile-display"><table>
-<tr><td class="tile-preview tile-8"></td><td class="tile-preview tile-8"></td><td class="tile-preview tile-8"></td></tr>
-<tr><td class="tile-preview tile-8"></td><td class="tile-preview       "></td><td class="tile-preview       "></td></tr>
-</table></label></div></td>
-<td><div><input type="checkbox" id="tile_9" class="tile-input"><label for="tile_9" class="tile-display"><table>
-<tr><td class="tile-preview tile-9"></td><td class="tile-preview tile-9"></td><td class="tile-preview tile-9"><td class="tile-preview tile-9"></td></tr>
-<tr><td class="tile-preview tile-9"></td><td class="tile-preview       "></td><td class="tile-preview       "><td class="tile-preview       "></td></tr>
+<td><div><input type="checkbox" id="t5"><label class="int" for="tile_5"><table>
+<tr><td class="tpr c5"></td><td class="tpr c5"></td><td class="tpr c5"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c5"></td><td class="tpr"></td></tr>
 </table></label></div></td>
 </tr><tr>
-<td><div><input type="checkbox" id="tile_10" class="tile-input"><label for="tile_10" class="tile-display"><table>
-<tr><td class="tile-preview tile-10"></td><td class="tile-preview tile-10"></td><td class="tile-preview tile-10"><td class="tile-preview tile-10"></td></tr>
-<tr><td class="tile-preview        "></td><td class="tile-preview tile-10"></td><td class="tile-preview        "><td class="tile-preview        "></td></tr>
+<td><div><input type="checkbox" id="t6"><label class="int" for="tile_6"><table>
+<tr><td class="tpr c6"></td><td class="tpr c6"></td><td class="tpr"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c6"></td><td class="tpr c6"></td></tr>
 </table></label></div></td>
-<td><div><input type="checkbox" id="tile_11" class="tile-input"><label for="tile_11" class="tile-display"><table>
-<tr><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td></tr>
-<tr><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td><td class="tile-preview        "></td></tr>
+<td><div><input type="checkbox" id="t7"><label class="int" for="tile_7"><table>
+<tr><td class="tpr c7"></td><td class="tpr c7"></td><td class="tpr"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c7"></td><td class="tpr"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c7"></td><td class="tpr c7"></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="t8"><label class="int" for="tile_8"><table>
+<tr><td class="tpr c8"></td><td class="tpr c8"></td><td class="tpr c8"></td></tr>
+<tr><td class="tpr c8"></td><td class="tpr"></td><td class="tpr"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="t9"><label class="int" for="tile_9"><table>
+<tr><td class="tpr c9"></td><td class="tpr c9"></td><td class="tpr c9"><td class="tpr c9"></td></tr>
+<tr><td class="tpr c9"></td><td class="tpr"></td><td class="tpr"><td class="tpr"></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="t10"><label class="int" for="tile_10"><table>
+<tr><td class="tpr c10"></td><td class="tpr c10"></td><td class="tpr c10"><td class="tpr c10"></td></tr>
+<tr><td class="tpr"></td><td class="tpr c10"></td><td class="tpr"><td class="tpr"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="t11"><label class="int" for="tile_11"><table>
+<tr><td class="tpr c11"></td><td class="tpr c11"></td><td class="tpr c11"></td></tr>
+<tr><td class="tpr c11"></td><td class="tpr c11"></td><td class="tpr"></td></tr>
 </table></label></div></td>
 </tr>
 </table>
@@ -128,46 +102,46 @@ label.tile-display {
 
 <table>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_0" class="board-input visually-hidden"><label for="board_state_0_0" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_0" class="board-input visually-hidden"><label for="board_state_1_0" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_0" class="board-input visually-hidden"><label for="board_state_2_0" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_0" class="board-input visually-hidden"><label for="board_state_3_0" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_0" class="board-input visually-hidden"><label for="board_state_4_0" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi00" class="inb"><label for="bi00"></label></div></td>
+<td><div><input type="checkbox" id="bi10" class="inb"><label for="bi10"></label></div></td>
+<td><div><input type="checkbox" id="bi20" class="inb"><label for="bi20"></label></div></td>
+<td><div><input type="checkbox" id="bi30" class="inb"><label for="bi30"></label></div></td>
+<td><div><input type="checkbox" id="bi40" class="inb"><label for="bi40"></label></div></td>
 </tr>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_1" class="board-input visually-hidden"><label for="board_state_0_1" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_1" class="board-input visually-hidden"><label for="board_state_1_1" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_1" class="board-input visually-hidden"><label for="board_state_2_1" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_1" class="board-input visually-hidden"><label for="board_state_3_1" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_1" class="board-input visually-hidden"><label for="board_state_4_1" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi01" class="inb"><label for="bi01"></label></div></td>
+<td><div><input type="checkbox" id="bi11" class="inb"><label for="bi11"></label></div></td>
+<td><div><input type="checkbox" id="bi21" class="inb"><label for="bi21"></label></div></td>
+<td><div><input type="checkbox" id="bi31" class="inb"><label for="bi31"></label></div></td>
+<td><div><input type="checkbox" id="bi41" class="inb"><label for="bi41"></label></div></td>
 </tr>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_2" class="board-input visually-hidden"><label for="board_state_0_2" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_2" class="board-input visually-hidden"><label for="board_state_1_2" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_2" class="board-input visually-hidden"><label for="board_state_2_2" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_2" class="board-input visually-hidden"><label for="board_state_3_2" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_2" class="board-input visually-hidden"><label for="board_state_4_2" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi02" class="inb"><label for="bi02"></label></div></td>
+<td><div><input type="checkbox" id="bi12" class="inb"><label for="bi12"></label></div></td>
+<td><div><input type="checkbox" id="bi22" class="inb"><label for="bi22"></label></div></td>
+<td><div><input type="checkbox" id="bi32" class="inb"><label for="bi32"></label></div></td>
+<td><div><input type="checkbox" id="bi42" class="inb"><label for="bi42"></label></div></td>
 </tr>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_3" class="board-input visually-hidden"><label for="board_state_0_3" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_3" class="board-input visually-hidden"><label for="board_state_1_3" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_3" class="board-input visually-hidden"><label for="board_state_2_3" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_3" class="board-input visually-hidden"><label for="board_state_3_3" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_3" class="board-input visually-hidden"><label for="board_state_4_3" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi03" class="inb"><label for="bi03"></label></div></td>
+<td><div><input type="checkbox" id="bi13" class="inb"><label for="bi13"></label></div></td>
+<td><div><input type="checkbox" id="bi23" class="inb"><label for="bi23"></label></div></td>
+<td><div><input type="checkbox" id="bi33" class="inb"><label for="bi33"></label></div></td>
+<td><div><input type="checkbox" id="bi43" class="inb"><label for="bi43"></label></div></td>
 </tr>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_4" class="board-input visually-hidden"><label for="board_state_0_4" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_4" class="board-input visually-hidden"><label for="board_state_1_4" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_4" class="board-input visually-hidden"><label for="board_state_2_4" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_4" class="board-input visually-hidden"><label for="board_state_3_4" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_4" class="board-input visually-hidden"><label for="board_state_4_4" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi04" class="inb"><label for="bi04"></label></div></td>
+<td><div><input type="checkbox" id="bi14" class="inb"><label for="bi14"></label></div></td>
+<td><div><input type="checkbox" id="bi24" class="inb"><label for="bi24"></label></div></td>
+<td><div><input type="checkbox" id="bi34" class="inb"><label for="bi34"></label></div></td>
+<td><div><input type="checkbox" id="bi44" class="inb"><label for="bi44"></label></div></td>
 </tr>
 <tr>
-<td><div><input type="checkbox" id="board_state_0_5" class="board-input visually-hidden"><label for="board_state_0_5" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_1_5" class="board-input visually-hidden"><label for="board_state_1_5" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_2_5" class="board-input visually-hidden"><label for="board_state_2_5" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_3_5" class="board-input visually-hidden"><label for="board_state_3_5" class="board-display"></label></div></td>
-<td><div><input type="checkbox" id="board_state_4_5" class="board-input visually-hidden"><label for="board_state_4_5" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="bi05" class="inb"><label for="bi05"></label></div></td>
+<td><div><input type="checkbox" id="bi15" class="inb"><label for="bi15"></label></div></td>
+<td><div><input type="checkbox" id="bi25" class="inb"><label for="bi25"></label></div></td>
+<td><div><input type="checkbox" id="bi35" class="inb"><label for="bi35"></label></div></td>
+<td><div><input type="checkbox" id="bi45" class="inb"><label for="bi45"></label></div></td>
 </tr>
 </table>
 </td>
@@ -176,46 +150,46 @@ label.tile-display {
 
 <table>
 <tr>
-<td><div id="board_output_0_0" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_0" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_0" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_0" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_0" class="board-output tile-255"></div></td>
+<td><div id="bo00" class="bo c255"></div></td>
+<td><div id="bo10" class="bo c255"></div></td>
+<td><div id="bo20" class="bo c255"></div></td>
+<td><div id="bo30" class="bo c255"></div></td>
+<td><div id="bo40" class="bo c255"></div></td>
 </tr>
 <tr>
-<td><div id="board_output_0_1" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_1" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_1" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_1" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_1" class="board-output tile-255"></div></td>
+<td><div id="bo01" class="bo c255"></div></td>
+<td><div id="bo11" class="bo c255"></div></td>
+<td><div id="bo21" class="bo c255"></div></td>
+<td><div id="bo31" class="bo c255"></div></td>
+<td><div id="bo41" class="bo c255"></div></td>
 </tr>
 <tr>
-<td><div id="board_output_0_2" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_2" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_2" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_2" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_2" class="board-output tile-255"></div></td>
+<td><div id="bo02" class="bo c255"></div></td>
+<td><div id="bo12" class="bo c255"></div></td>
+<td><div id="bo22" class="bo c255"></div></td>
+<td><div id="bo32" class="bo c255"></div></td>
+<td><div id="bo42" class="bo c255"></div></td>
 </tr>
 <tr>
-<td><div id="board_output_0_3" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_3" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_3" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_3" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_3" class="board-output tile-255"></div></td>
+<td><div id="bo03" class="bo c255"></div></td>
+<td><div id="bo13" class="bo c255"></div></td>
+<td><div id="bo23" class="bo c255"></div></td>
+<td><div id="bo33" class="bo c255"></div></td>
+<td><div id="bo43" class="bo c255"></div></td>
 </tr>
 <tr>
-<td><div id="board_output_0_4" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_4" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_4" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_4" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_4" class="board-output tile-255"></div></td>
+<td><div id="bo04" class="bo c255"></div></td>
+<td><div id="bo14" class="bo c255"></div></td>
+<td><div id="bo24" class="bo c255"></div></td>
+<td><div id="bo34" class="bo c255"></div></td>
+<td><div id="bo44" class="bo c255"></div></td>
 </tr>
 <tr>
-<td><div id="board_output_0_5" class="board-output tile-255"></div></td>
-<td><div id="board_output_1_5" class="board-output tile-255"></div></td>
-<td><div id="board_output_2_5" class="board-output tile-255"></div></td>
-<td><div id="board_output_3_5" class="board-output tile-255"></div></td>
-<td><div id="board_output_4_5" class="board-output tile-255"></div></td>
+<td><div id="bo05" class="bo c255"></div></td>
+<td><div id="bo15" class="bo c255"></div></td>
+<td><div id="bo25" class="bo c255"></div></td>
+<td><div id="bo35" class="bo c255"></div></td>
+<td><div id="bo45" class="bo c255"></div></td>
 </tr>
 </table>
 </td>
@@ -236,11 +210,11 @@ label.tile-display {
     }
     // Rig up all the buttons:
     for (let tile_index = 0; tile_index < 12; ++tile_index) {
-      document.getElementById(`tile_${tile_index}`).onchange = recompute_output;
+      document.getElementById(`t${tile_index}`).onchange = recompute_output;
     }
     for (let y = 0; y < 6; ++y) {
       for (let x = 0; x < 5; ++x) {
-        document.getElementById(`board_state_${x}_${y}`).onchange = recompute_output;
+        document.getElementById(`bi${x}${y}`).onchange = recompute_output;
       }
     }
     // Trigger initial update:
@@ -271,7 +245,7 @@ label.tile-display {
     var tile_encoded = 0;
     for (let tile_index = 0; tile_index < 12; ++tile_index) {
       tile_encoded <<= 1;
-      if (document.getElementById(`tile_${tile_index}`).checked) {
+      if (document.getElementById(`t${tile_index}`).checked) {
         tile_total += TILE_SIZES[tile_index];
         tile_encoded |= 1;
       }
@@ -287,7 +261,7 @@ label.tile-display {
     for (let y = 5; y >= 0; --y) {
       for (let x = 4; x >= 0; --x) {
         board_encoded <<= 1;
-        if (document.getElementById(`board_state_${x}_${y}`).checked) {
+        if (document.getElementById(`bi${x}${y}`).checked) {
           board_total += 1;
           board_encoded |= 1;
         }
@@ -322,7 +296,7 @@ label.tile-display {
     ];
     for (let y = 5; y >= 0; --y) {
       for (let x = 4; x >= 0; --x) {
-        document.getElementById(`board_output_${x}_${y}`).classList = `board-output tile-${cells[y][x]}`;
+        document.getElementById(`bo${x}${y}`).classList = `bo c${cells[y][x]}`;
       }
     }
     if (result.has_solution) {
