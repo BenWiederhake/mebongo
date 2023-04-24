@@ -46,10 +46,48 @@ const CELL_TO_TILE_LENGTH: usize = (board::MAX_WIDTH * board::MAX_HEIGHT) as usi
 #[derive(Debug, PartialEq)]
 #[wasm_bindgen]
 pub struct Result {
-    steps_taken: usize,
-    has_solution: bool,
-    has_finished: bool,
-    cell_to_tile: [u8; CELL_TO_TILE_LENGTH],
+    pub steps_taken: usize,
+    pub has_solution: bool,
+    pub has_finished: bool,
+    // Ugh. Wasm doesn't know how to deal with small arrays like [u8; CELL_TO_TILE_LENGTH]:
+    // > the trait `IntoWasmAbi` is not implemented for `[u8; 30]`
+    // > the trait `FromWasmAbi` is not implemented for `[u8; 30]`
+    pub row0: u64,
+    pub row1: u64,
+    pub row2: u64,
+    pub row3: u64,
+    pub row4: u64,
+    pub row5: u64,
+}
+
+fn extract_row(cell_to_tile: [u8; CELL_TO_TILE_LENGTH], row_index: usize) -> u64 {
+    let mut result = 0;
+    for column in 0..(board::MAX_WIDTH as usize) {
+        result <<= 8;
+        result |= cell_to_tile[row_index * board::MAX_WIDTH as usize + column] as u64;
+    }
+    result
+}
+
+impl Result {
+    fn new(
+        steps_taken: usize,
+        has_solution: bool,
+        has_finished: bool,
+        cell_to_tile: [u8; CELL_TO_TILE_LENGTH],
+    ) -> Result {
+        Result {
+            steps_taken,
+            has_solution,
+            has_finished,
+            row0: extract_row(cell_to_tile, 0),
+            row1: extract_row(cell_to_tile, 1),
+            row2: extract_row(cell_to_tile, 2),
+            row3: extract_row(cell_to_tile, 3),
+            row4: extract_row(cell_to_tile, 4),
+            row5: extract_row(cell_to_tile, 5),
+        }
+    }
 }
 
 fn decode_tile_indices(tiles_encoded: u32) -> Vec<usize> {
@@ -62,8 +100,18 @@ fn decode_tile_indices(tiles_encoded: u32) -> Vec<usize> {
     tile_indices
 }
 
-fn paint_cells(steps: &search::Result, tile_lookup: &[usize]) -> [u8; CELL_TO_TILE_LENGTH] {
+fn paint_cells(board: &board::Board, steps: &search::Result, tile_lookup: &[usize]) -> [u8; CELL_TO_TILE_LENGTH] {
+    // 255 for black (not part of the board) and 254 for white (available but unused).
     let mut cells = [255; CELL_TO_TILE_LENGTH];
+    for y in 0..board::MAX_HEIGHT {
+        for x in 0..board::MAX_WIDTH {
+            if board.is_blocked_at(x, y) {
+                continue;
+            }
+            let cell_index = x + board::MAX_WIDTH * y;
+            cells[cell_index as usize] = 254;
+        }
+    }
     for operation in steps {
         // Note that the 'tile_index' refers to the index in the '&[Tile]' given to
         // 'State::new()'. We need to translate that to the index in 'tile::ALL_TILES'.
@@ -92,18 +140,18 @@ pub fn compute_result(tiles_encoded: u32, board_encoded: u32, max_steps: usize) 
         .map(|&i| tile::ALL_TILES[i].clone())
         .collect::<Vec<_>>();
     let board = board::Board::from_encoded(board_encoded);
-    let mut search_state = search::State::new(board, &tiles);
+    let mut search_state = search::State::new(board.clone(), &tiles);
     let (steps_taken, raw_result) = search_state.step_at_most(max_steps);
     let (has_solution, cell_to_tile) = match raw_result {
         None => (false, [255; CELL_TO_TILE_LENGTH]),
-        Some(steps) => (true, paint_cells(&steps, &tile_indices)),
+        Some(steps) => (true, paint_cells(&board, &steps, &tile_indices)),
     };
-    Result {
+    Result::new(
         steps_taken,
         has_solution,
-        has_finished: !search_state.can_step(),
+        !search_state.can_step(),
         cell_to_tile,
-    }
+    )
 }
 
 #[cfg(test)]
@@ -132,20 +180,6 @@ mod tests {
         );
     }
 
-    fn make_result(
-        steps_taken: usize,
-        has_solution: bool,
-        has_finished: bool,
-        cell_to_tile: [u8; CELL_TO_TILE_LENGTH],
-    ) -> Result {
-        Result {
-            steps_taken,
-            has_solution,
-            has_finished,
-            cell_to_tile,
-        }
-    }
-
     #[test]
     fn test_simple_positive() {
         #[rustfmt::skip]
@@ -157,7 +191,7 @@ mod tests {
             //     ·····
             //     ····· MSB
             compute_result(0x062, 0x000779E6, 100),
-            make_result(
+            Result::new(
                 22,
                 true,
                 false,
@@ -184,7 +218,7 @@ mod tests {
             //     ·····
             //     ····· MSB
             compute_result(0x062, 0x000779E5, 100),
-            make_result(
+            Result::new(
                 17,
                 false,
                 true,
@@ -211,7 +245,7 @@ mod tests {
             //     ·····
             //     ····· MSB
             compute_result(0x062, 0x000779E6, 10),
-            make_result(
+            Result::new(
                 10,
                 false,
                 false,
