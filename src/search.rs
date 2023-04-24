@@ -164,27 +164,18 @@ impl<'a> State<'a> {
         None
     }
 
-    pub fn step_at_most(&mut self, max_steps: usize) -> Option<Result> {
+    pub fn step_at_most(&mut self, max_steps: usize) -> (usize, Option<Result>) {
         for steps_done in 0..max_steps {
             if !self.can_step() {
-                println!(
-                    "step_at_most({}): Search completed after {} steps",
-                    max_steps, steps_done
-                );
-                return None;
+                return (steps_done, None);
             }
             let result_maybe = self.step_single();
             if result_maybe.is_some() {
-                println!(
-                    "step_at_most({}): Found a result after {} steps",
-                    max_steps, steps_done
-                );
-                return result_maybe;
+                return (steps_done, result_maybe);
             }
         }
 
-        println!("step_at_most({0}): Timeout after {0} steps", max_steps);
-        None
+        (max_steps, None)
     }
 }
 
@@ -245,12 +236,15 @@ mod tests {
         let mut board = Board::all_blocked();
         board.set_unblocked(2, 3);
         let mut s = State::new(board, &tiles);
-        assert_eq!(s.step_at_most(5), Some(vec![Operation::from(0, 1, 2, 3)]));
+        assert_eq!(
+            s.step_at_most(5),
+            (1, Some(vec![Operation::from(0, 1, 2, 3)]))
+        );
         assert!(!s.can_step());
-        assert_eq!(s.step_at_most(5), None);
+        assert_eq!(s.step_at_most(5), (0, None));
         assert!(!s.can_step());
         // Verify that we do not loop:
-        assert_eq!(s.step_at_most(1234567890), None);
+        assert_eq!(s.step_at_most(1234567890), (0, None));
     }
 
     #[test]
@@ -269,15 +263,18 @@ mod tests {
         let mut s = State::new(board, &tiles);
         assert_eq!(
             s.step_at_most(5),
-            Some(vec![
-                Operation::from(0, 0, 3, 0),
-                Operation::from(1, 0, 3, 2),
-            ])
+            (
+                2,
+                Some(vec![
+                    Operation::from(0, 0, 3, 0),
+                    Operation::from(1, 0, 3, 2),
+                ])
+            )
         );
-        assert_eq!(s.step_at_most(5), None);
+        assert_eq!(s.step_at_most(5), (0, None));
         assert!(!s.can_step());
         // Verify that we do not loop:
-        assert_eq!(s.step_at_most(1234567890), None);
+        assert_eq!(s.step_at_most(1234567890), (0, None));
     }
 
     #[test]
@@ -304,17 +301,20 @@ mod tests {
         let mut s = State::new(board, &tiles);
         assert_eq!(
             s.step_at_most(1000),
-            Some(vec![
-                Operation::from(0, 1, 2, 0),
-                Operation::from(1, 1, 2, 2),
-                Operation::from(2, 4, 0, 0),
-                // Visually:
-                // ·20··
-                // 2200·
-                // ·2011
-                // ·211·
-                // Good!
-            ])
+            (
+                22,
+                Some(vec![
+                    Operation::from(0, 1, 2, 0),
+                    Operation::from(1, 1, 2, 2),
+                    Operation::from(2, 4, 0, 0),
+                    // Visually:
+                    // ·20··
+                    // 2200·
+                    // ·2011
+                    // ·211·
+                    // Good!
+                ])
+            )
         );
         // There is more than one solution
         assert!(s.can_step());
@@ -343,7 +343,7 @@ mod tests {
         // (3,3) missing, and (0,0) doesn't help.
         board.set_unblocked(0, 0);
         let mut s = State::new(board, &tiles);
-        assert_eq!(s.step_at_most(1000), None);
+        assert_eq!(s.step_at_most(1000), (29, None));
         assert!(!s.can_step());
     }
 }

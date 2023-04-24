@@ -16,6 +16,12 @@ impl Board {
         Board { bit_data: 0 }
     }
 
+    pub fn from_encoded(encoded: u32) -> Board {
+        let board_size = MAX_WIDTH * MAX_HEIGHT;
+        assert_eq!(0, encoded & !((1 << board_size) - 1));
+        Board { bit_data: encoded }
+    }
+
     pub fn is_all_blocked(&self) -> bool {
         self.bit_data == 0
     }
@@ -187,5 +193,52 @@ mod tests {
             Some(Board::all_blocked())
         );
         assert_eq!(b.with_blocked_tile(&tile_from(0x0011), 0, 2), None);
+    }
+
+    #[test]
+    fn test_from_encoded() {
+        // LSB XX···
+        //     XX···
+        //     XXX·X
+        //     XXXXX
+        //     ··XXX
+        //     ····· MSB
+        let b = Board::from_encoded(0x01CFDC63);
+        for y in 0..MAX_HEIGHT {
+            for x in 0..MAX_WIDTH {
+                print!("{}", if b.is_blocked_at(x, y) { "·" } else { "X" });
+            }
+            println!();
+        }
+        assert!(!b.is_blocked_at(0, 0));
+        assert!(!b.is_blocked_at(1, 0));
+        assert!(b.is_blocked_at(2, 0));
+        assert!(b.is_blocked_at(3, 0));
+        assert!(b.is_blocked_at(4, 0));
+        assert!(!b.is_blocked_at(0, 1));
+        assert!(!b.is_blocked_at(1, 1));
+        assert!(b.is_blocked_at(2, 1));
+        assert!(b.is_blocked_at(3, 1));
+        assert!(b.is_blocked_at(4, 1));
+        assert!(!b.is_blocked_at(0, 2));
+        assert!(!b.is_blocked_at(1, 2));
+        assert!(!b.is_blocked_at(2, 2));
+        assert!(b.is_blocked_at(3, 2));
+        assert!(!b.is_blocked_at(4, 2));
+        assert!(!b.is_blocked_at(0, 3));
+        assert!(!b.is_blocked_at(1, 3));
+        assert!(!b.is_blocked_at(2, 3));
+        assert!(!b.is_blocked_at(3, 3));
+        assert!(!b.is_blocked_at(4, 3));
+        assert!(b.is_blocked_at(0, 4));
+        assert!(b.is_blocked_at(1, 4));
+        assert!(!b.is_blocked_at(2, 4));
+        assert!(!b.is_blocked_at(3, 4));
+        assert!(!b.is_blocked_at(4, 4));
+        assert!(b.is_blocked_at(0, 5));
+        assert!(b.is_blocked_at(1, 5));
+        assert!(b.is_blocked_at(2, 5));
+        assert!(b.is_blocked_at(3, 5));
+        assert!(b.is_blocked_at(4, 5));
     }
 }
