@@ -3,11 +3,23 @@ extern crate lazy_static;
 #[macro_use]
 extern crate static_assertions;
 
+use wasm_bindgen::prelude::*;
+
 mod board;
 mod search;
 mod tile;
 
-fn main() {
+#[wasm_bindgen]
+extern {
+    pub fn alert(s: &str);
+}
+
+#[wasm_bindgen]
+pub fn greet(name: &str) {
+    alert(&format!("Hello, {}!", name));
+}
+
+pub fn pseudo_main() {
     let mut is_first_tile = true;
     for tile in tile::ALL_TILES.iter() {
         if !is_first_tile {

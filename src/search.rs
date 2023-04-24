@@ -1,5 +1,5 @@
 use crate::board::{self, Board};
-use crate::tile::{self, Tile};
+use crate::tile::Tile;
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct IndexedTileLayout {
@@ -191,6 +191,7 @@ impl<'a> State<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::tile;
 
     #[test]
     fn test_basic_negative() {
