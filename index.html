@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<style>
+.board-input ~ .board-display {
+  background-image: url("square_black.png");
+  background-size: contain;
+  width: 60px;
+  height: 60px;
+}
+.board-input:checked ~ .board-display {
+  background-image: url("square_white.png");
+}
+.board-display {
+  display: block;
+}
+.tile-preview {
+  width: 30px;
+  height: 30px;
+}
+.board-output {
+  width: 60px;
+  height: 60px;
+}
+.tile-254 { background-image: url("square_white.png"); background-size: contain; }
+.tile-255 { background-image: url("square_black.png"); background-size: contain; }
+.tile-0   { background-image: url("square_col_00.png"); background-size: contain; }
+.tile-1   { background-image: url("square_col_01.png"); background-size: contain; }
+.tile-2   { background-image: url("square_col_02.png"); background-size: contain; }
+.tile-3   { background-image: url("square_col_03.png"); background-size: contain; }
+.tile-4   { background-image: url("square_col_04.png"); background-size: contain; }
+.tile-5   { background-image: url("square_col_05.png"); background-size: contain; }
+.tile-6   { background-image: url("square_col_06.png"); background-size: contain; }
+.tile-7   { background-image: url("square_col_07.png"); background-size: contain; }
+.tile-8   { background-image: url("square_col_08.png"); background-size: contain; }
+.tile-9   { background-image: url("square_col_09.png"); background-size: contain; }
+.tile-10  { background-image: url("square_col_10.png"); background-size: contain; }
+.tile-11  { background-image: url("square_col_11.png"); background-size: contain; }
+.visually-hidden {
+  position: absolute;
+  opacity: 0%;
+}
+table, tr, td {
+  padding: 0;
+  border-spacing: 0;
+}
+label.tile-display {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+</style>
+</head>
+<body><center>
+
+<h1>Mebongo</h1>
+
+<table>
+<tr>
+  <th id="input-tiles-label">Loading …</th>
+  <th style="width: 3rem;"><!-- Disgusting spacer --></th>
+  <th id="input-board-label">Loading …</th>
+  <th style="width: 3rem;"><!-- Disgusting spacer --></th>
+  <th><span id="output-label">Loading …</span><br/><span id="output-label-small" class="tiny">Loading …</span></th>
+</tr>
+<tr></tr>
+<td>
+
+<table>
+<tr>
+<td><div><input type="checkbox" id="tile_0" class="tile-input"><label for="tile_0" class="tile-display"><table>
+<tr><td class="tile-preview tile-0"></td><td class="tile-preview tile-0"></td></tr>
+<tr><td class="tile-preview tile-0"></td><td class="tile-preview tile-0"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_1" class="tile-input"><label for="tile_1" class="tile-display"><table>
+<tr><td class="tile-preview tile-1"></td></td><td class="tile-preview tile-1"></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="tile_2" class="tile-input"><label for="tile_2" class="tile-display"><table>
+<tr><td class="tile-preview tile-2"></td><td class="tile-preview tile-2"></td><td class="tile-preview tile-2"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_3" class="tile-input"><label for="tile_3" class="tile-display"><table>
+<tr><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td><td class="tile-preview tile-3"></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="tile_4" class="tile-input"><label for="tile_4" class="tile-display"><table>
+<tr><td class="tile-preview tile-4"></td><td class="tile-preview tile-4"></td></tr>
+<tr><td class="tile-preview       "></td><td class="tile-preview tile-4"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_5" class="tile-input"><label for="tile_5" class="tile-display"><table>
+<tr><td class="tile-preview tile-5"></td><td class="tile-preview tile-5"></td><td class="tile-preview tile-5"></td></tr>
+<tr><td class="tile-preview       "></td><td class="tile-preview tile-5"></td><td class="tile-preview       "></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="tile_6" class="tile-input"><label for="tile_6" class="tile-display"><table>
+<tr><td class="tile-preview tile-6"></td><td class="tile-preview tile-6"></td><td class="tile-preview       "></td></tr>
+<tr><td class="tile-preview       "></td><td class="tile-preview tile-6"></td><td class="tile-preview tile-6"></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_7" class="tile-input"><label for="tile_7" class="tile-display"><table>
+<tr><td class="tile-preview tile-7"></td><td class="tile-preview tile-7"></td><td class="tile-preview       "></td></tr>
+<tr><td class="tile-preview       "></td><td class="tile-preview tile-7"></td><td class="tile-preview       "></td></tr>
+<tr><td class="tile-preview       "></td><td class="tile-preview tile-7"></td><td class="tile-preview tile-7"></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="tile_8" class="tile-input"><label for="tile_8" class="tile-display"><table>
+<tr><td class="tile-preview tile-8"></td><td class="tile-preview tile-8"></td><td class="tile-preview tile-8"></td></tr>
+<tr><td class="tile-preview tile-8"></td><td class="tile-preview       "></td><td class="tile-preview       "></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_9" class="tile-input"><label for="tile_9" class="tile-display"><table>
+<tr><td class="tile-preview tile-9"></td><td class="tile-preview tile-9"></td><td class="tile-preview tile-9"><td class="tile-preview tile-9"></td></tr>
+<tr><td class="tile-preview tile-9"></td><td class="tile-preview       "></td><td class="tile-preview       "><td class="tile-preview       "></td></tr>
+</table></label></div></td>
+</tr><tr>
+<td><div><input type="checkbox" id="tile_10" class="tile-input"><label for="tile_10" class="tile-display"><table>
+<tr><td class="tile-preview tile-10"></td><td class="tile-preview tile-10"></td><td class="tile-preview tile-10"><td class="tile-preview tile-10"></td></tr>
+<tr><td class="tile-preview        "></td><td class="tile-preview tile-10"></td><td class="tile-preview        "><td class="tile-preview        "></td></tr>
+</table></label></div></td>
+<td><div><input type="checkbox" id="tile_11" class="tile-input"><label for="tile_11" class="tile-display"><table>
+<tr><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td></tr>
+<tr><td class="tile-preview tile-11"></td><td class="tile-preview tile-11"></td><td class="tile-preview        "></td></tr>
+</table></label></div></td>
+</tr>
+</table>
+
+</td><td><center>+</center></td><td>
+
+<table>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_0" class="board-input visually-hidden"><label for="board_state_0_0" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_0" class="board-input visually-hidden"><label for="board_state_1_0" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_0" class="board-input visually-hidden"><label for="board_state_2_0" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_0" class="board-input visually-hidden"><label for="board_state_3_0" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_0" class="board-input visually-hidden"><label for="board_state_4_0" class="board-display"></label></div></td>
+</tr>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_1" class="board-input visually-hidden"><label for="board_state_0_1" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_1" class="board-input visually-hidden"><label for="board_state_1_1" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_1" class="board-input visually-hidden"><label for="board_state_2_1" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_1" class="board-input visually-hidden"><label for="board_state_3_1" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_1" class="board-input visually-hidden"><label for="board_state_4_1" class="board-display"></label></div></td>
+</tr>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_2" class="board-input visually-hidden"><label for="board_state_0_2" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_2" class="board-input visually-hidden"><label for="board_state_1_2" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_2" class="board-input visually-hidden"><label for="board_state_2_2" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_2" class="board-input visually-hidden"><label for="board_state_3_2" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_2" class="board-input visually-hidden"><label for="board_state_4_2" class="board-display"></label></div></td>
+</tr>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_3" class="board-input visually-hidden"><label for="board_state_0_3" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_3" class="board-input visually-hidden"><label for="board_state_1_3" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_3" class="board-input visually-hidden"><label for="board_state_2_3" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_3" class="board-input visually-hidden"><label for="board_state_3_3" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_3" class="board-input visually-hidden"><label for="board_state_4_3" class="board-display"></label></div></td>
+</tr>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_4" class="board-input visually-hidden"><label for="board_state_0_4" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_4" class="board-input visually-hidden"><label for="board_state_1_4" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_4" class="board-input visually-hidden"><label for="board_state_2_4" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_4" class="board-input visually-hidden"><label for="board_state_3_4" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_4" class="board-input visually-hidden"><label for="board_state_4_4" class="board-display"></label></div></td>
+</tr>
+<tr>
+<td><div><input type="checkbox" id="board_state_0_5" class="board-input visually-hidden"><label for="board_state_0_5" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_1_5" class="board-input visually-hidden"><label for="board_state_1_5" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_2_5" class="board-input visually-hidden"><label for="board_state_2_5" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_3_5" class="board-input visually-hidden"><label for="board_state_3_5" class="board-display"></label></div></td>
+<td><div><input type="checkbox" id="board_state_4_5" class="board-input visually-hidden"><label for="board_state_4_5" class="board-display"></label></div></td>
+</tr>
+</table>
+</td>
+
+</td><td><center>=</center></td><td>
+
+<table>
+<tr>
+<td><div id="board_output_0_0" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_0" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_0" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_0" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_0" class="board-output tile-255"></div></td>
+</tr>
+<tr>
+<td><div id="board_output_0_1" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_1" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_1" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_1" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_1" class="board-output tile-255"></div></td>
+</tr>
+<tr>
+<td><div id="board_output_0_2" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_2" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_2" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_2" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_2" class="board-output tile-255"></div></td>
+</tr>
+<tr>
+<td><div id="board_output_0_3" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_3" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_3" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_3" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_3" class="board-output tile-255"></div></td>
+</tr>
+<tr>
+<td><div id="board_output_0_4" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_4" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_4" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_4" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_4" class="board-output tile-255"></div></td>
+</tr>
+<tr>
+<td><div id="board_output_0_5" class="board-output tile-255"></div></td>
+<td><div id="board_output_1_5" class="board-output tile-255"></div></td>
+<td><div id="board_output_2_5" class="board-output tile-255"></div></td>
+<td><div id="board_output_3_5" class="board-output tile-255"></div></td>
+<td><div id="board_output_4_5" class="board-output tile-255"></div></td>
+</tr>
+</table>
+</td>
+
+</td>
+</tr>
+</table>
+
+<script type="module">
+  import init, { check_config, compute_result } from "./mebongo.js";
+  init().then(() => {
+    // Check whether everything is okay
+    let config_okay = check_config(42, 5, 6, 4, 12);
+    if (config_okay != 134250805) {
+      console.error(`Error ${config_okay}`);
+      document.getElementById("output-label").textContent = `Error ${config_okay}`;
+      return;
+    }
+    // Rig up all the buttons:
+    for (let tile_index = 0; tile_index < 12; ++tile_index) {
+      document.getElementById(`tile_${tile_index}`).onchange = recompute_output;
+    }
+    for (let y = 0; y < 6; ++y) {
+      for (let x = 0; x < 5; ++x) {
+        document.getElementById(`board_state_${x}_${y}`).onchange = recompute_output;
+      }
+    }
+    // Trigger initial update:
+    setTimeout(recompute_output, 1);
+  });
+
+  const TILE_SIZES = [4, 2, 3, 4, 3, 4, 4, 5, 4, 5, 5, 5];
+  // Make this configurable?
+  const MAX_STEPS = 10000;
+
+  function explode_row(encoded_row) {
+    return [
+      Number.parseInt((encoded_row >> 32n) & 0xFFn),
+      Number.parseInt((encoded_row >> 24n) & 0xFFn),
+      Number.parseInt((encoded_row >> 16n) & 0xFFn),
+      Number.parseInt((encoded_row >>  8n) & 0xFFn),
+      Number.parseInt((encoded_row >>  0n) & 0xFFn),
+    ];
+  }
+
+  function recompute_output() {
+    let begin = performance.now();
+    document.getElementById("output-label").textContent = "Broken";
+    document.getElementById("output-label-small").textContent = "lol";
+
+    // Encode tiles
+    var tile_total = 0;
+    var tile_encoded = 0;
+    for (let tile_index = 0; tile_index < 12; ++tile_index) {
+      tile_encoded <<= 1;
+      if (document.getElementById(`tile_${tile_index}`).checked) {
+        tile_total += TILE_SIZES[tile_index];
+        tile_encoded |= 1;
+      }
+    }
+    document.getElementById("input-tiles-label").textContent = `Which tiles? (covers ${tile_total})`;
+
+    // Encode board
+    // Note: This assumes that the browser's "integer" type has at least 30 bits.
+    // This should be the case with any reasonable int and f64, but is problematic on browsers that use f32.
+    // See also https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+    var board_total = 0;
+    var board_encoded = 0;
+    for (let y = 5; y >= 0; --y) {
+      for (let x = 4; x >= 0; --x) {
+        board_encoded <<= 1;
+        if (document.getElementById(`board_state_${x}_${y}`).checked) {
+          board_total += 1;
+          board_encoded |= 1;
+        }
+      }
+    }
+    document.getElementById("input-board-label").textContent = `What is the board? (space for ${board_total})`;
+
+    // So the output has to be:
+    let result;
+    if (board_total >= tile_total) {
+      result = compute_result(tile_encoded, board_encoded, MAX_STEPS);
+    } else {
+      result = {
+        steps_taken: 0,
+        has_solution: false,
+        has_finished: true,
+        row0: 1099511627775n,
+        row1: 1099511627775n,
+        row2: 1099511627775n,
+        row3: 1099511627775n,
+        row4: 1099511627775n,
+        row5: 1099511627775n,
+      };
+    }
+    const cells = [
+      explode_row(result.row0),
+      explode_row(result.row1),
+      explode_row(result.row2),
+      explode_row(result.row3),
+      explode_row(result.row4),
+      explode_row(result.row5),
+    ];
+    for (let y = 5; y >= 0; --y) {
+      for (let x = 4; x >= 0; --x) {
+        document.getElementById(`board_output_${x}_${y}`).classList = `board-output tile-${cells[y][x]}`;
+      }
+    }
+    if (result.has_solution) {
+      document.getElementById("output-label").textContent = "Solution found!";
+      document.getElementById("output-label-small").textContent = `(${result.steps_taken} steps)`;
+    } else if (result.has_finished) {
+      document.getElementById("output-label").textContent = "No solution exists";
+      document.getElementById("output-label-small").textContent = `(proven in ${result.steps_taken} steps)`;
+    } else {
+      document.getElementById("output-label").textContent = "Timed out";
+      document.getElementById("output-label-small").textContent = `(after ${result.steps_taken} steps)`;
+    }
+    let end = performance.now();
+    console.log(begin, end, end - begin);
+  }
+</script>
+</center></body>
+</html>
