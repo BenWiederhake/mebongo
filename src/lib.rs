@@ -100,7 +100,11 @@ fn decode_tile_indices(tiles_encoded: u32) -> Vec<usize> {
     tile_indices
 }
 
-fn paint_cells(board: &board::Board, steps: &search::Result, tile_lookup: &[usize]) -> [u8; CELL_TO_TILE_LENGTH] {
+fn paint_cells(
+    board: &board::Board,
+    steps: &search::Result,
+    tile_lookup: &[usize],
+) -> [u8; CELL_TO_TILE_LENGTH] {
     // 255 for black (not part of the board) and 254 for white (available but unused).
     let mut cells = [255; CELL_TO_TILE_LENGTH];
     for y in 0..board::MAX_HEIGHT {
