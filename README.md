@@ -20,7 +20,8 @@ The [mebongo website](https://benwiederhake.github.io/mebongo/) quickly and easi
 2. Install wasm-pack (`cargo install wasm-pack`)
 3. Build the `.wasm` file and bindings: `wasm-pack build --target web`
 4. Optional: `wasm-opt pkg/mebongo_bg.wasm -O3 -o pages/foo.wasm` (saves 4 bytes, su much wow)
-5. Move the files to the `gh-pages` branch and either upload to github or try it locally (e.g. `python3 -m http.server`)
+5. Optional: `uglifyjs mebongo.js -o mebongo.js` to minify the generated bindings
+6. Move the files to the `gh-pages` branch and either upload to github or try it locally (e.g. `python3 -m http.server`)
 
 That's it. There are no external JS or CSS runtime dependencies during runtime.
 
