@@ -1,5 +1,5 @@
 use crate::board::{self, Board};
-use crate::tile::Tile;
+use crate::tile::{self, Tile};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct IndexedTileLayout {
@@ -163,6 +163,29 @@ impl<'a> State<'a> {
         // so it's okay to delay by one step.
         None
     }
+
+    pub fn step_at_most(&mut self, max_steps: usize) -> Option<Result> {
+        for steps_done in 0..max_steps {
+            if !self.can_step() {
+                println!(
+                    "step_at_most({}): Search completed after {} steps",
+                    max_steps, steps_done
+                );
+                return None;
+            }
+            let result_maybe = self.step_single();
+            if result_maybe.is_some() {
+                println!(
+                    "step_at_most({}): Found a result after {} steps",
+                    max_steps, steps_done
+                );
+                return result_maybe;
+            }
+        }
+
+        println!("step_at_most({0}): Timeout after {0} steps", max_steps);
+        None
+    }
 }
 
 #[cfg(test)]
@@ -213,5 +236,113 @@ mod tests {
         );
         // Will generate many more solutions, one for each possible offset.
         assert!(s.can_step());
+    }
+
+    #[test]
+    fn test_basic_positive_multi() {
+        let tiles: Vec<_> = vec![Tile::new_for_test(vec![0xFFFF, 0x0001])];
+        let mut board = Board::all_blocked();
+        board.set_unblocked(2, 3);
+        let mut s = State::new(board, &tiles);
+        assert_eq!(s.step_at_most(5), Some(vec![Operation::from(0, 1, 2, 3)]));
+        assert!(!s.can_step());
+        assert_eq!(s.step_at_most(5), None);
+        assert!(!s.can_step());
+        // Verify that we do not loop:
+        assert_eq!(s.step_at_most(1234567890), None);
+    }
+
+    #[test]
+    fn test_twotile_positive_multi() {
+        let tiles: Vec<_> = vec![
+            Tile::new_for_test(vec![0x0011]),
+            Tile::new_for_test(vec![0x0311]),
+        ];
+        let mut board = Board::all_blocked();
+        board.set_unblocked(3, 0);
+        board.set_unblocked(3, 1);
+        board.set_unblocked(3, 2);
+        board.set_unblocked(3, 3);
+        board.set_unblocked(3, 4);
+        board.set_unblocked(4, 4);
+        let mut s = State::new(board, &tiles);
+        assert_eq!(
+            s.step_at_most(5),
+            Some(vec![
+                Operation::from(0, 0, 3, 0),
+                Operation::from(1, 0, 3, 2),
+            ])
+        );
+        assert_eq!(s.step_at_most(5), None);
+        assert!(!s.can_step());
+        // Verify that we do not loop:
+        assert_eq!(s.step_at_most(1234567890), None);
+    }
+
+    #[test]
+    fn test_sample_easy() {
+        let tiles: Vec<_> = vec![
+            tile::ALL_TILES[5].clone(),  // three-way pipe
+            tile::ALL_TILES[6].clone(),  // S shape
+            tile::ALL_TILES[10].clone(), // elongated three-way pipe
+        ];
+        let mut board = Board::all_blocked();
+        board.set_unblocked(1, 0);
+        board.set_unblocked(2, 0);
+        board.set_unblocked(0, 1);
+        board.set_unblocked(1, 1);
+        board.set_unblocked(2, 1);
+        board.set_unblocked(3, 1);
+        board.set_unblocked(1, 2);
+        board.set_unblocked(2, 2);
+        board.set_unblocked(3, 2);
+        board.set_unblocked(4, 2);
+        board.set_unblocked(1, 3);
+        board.set_unblocked(2, 3);
+        board.set_unblocked(3, 3);
+        let mut s = State::new(board, &tiles);
+        assert_eq!(
+            s.step_at_most(1000),
+            Some(vec![
+                Operation::from(0, 1, 2, 0),
+                Operation::from(1, 1, 2, 2),
+                Operation::from(2, 4, 0, 0),
+                // Visually:
+                // ·20··
+                // 2200·
+                // ·2011
+                // ·211·
+                // Good!
+            ])
+        );
+        // There is more than one solution
+        assert!(s.can_step());
+    }
+
+    #[test]
+    fn test_sample_easy_negative() {
+        let tiles: Vec<_> = vec![
+            tile::ALL_TILES[5].clone(),  // three-way pipe
+            tile::ALL_TILES[6].clone(),  // S shape
+            tile::ALL_TILES[10].clone(), // elongated three-way pipe
+        ];
+        let mut board = Board::all_blocked();
+        board.set_unblocked(1, 0);
+        board.set_unblocked(2, 0);
+        board.set_unblocked(0, 1);
+        board.set_unblocked(1, 1);
+        board.set_unblocked(2, 1);
+        board.set_unblocked(3, 1);
+        board.set_unblocked(1, 2);
+        board.set_unblocked(2, 2);
+        board.set_unblocked(3, 2);
+        board.set_unblocked(4, 2);
+        board.set_unblocked(1, 3);
+        board.set_unblocked(2, 3);
+        // (3,3) missing, and (0,0) doesn't help.
+        board.set_unblocked(0, 0);
+        let mut s = State::new(board, &tiles);
+        assert_eq!(s.step_at_most(1000), None);
+        assert!(!s.can_step());
     }
 }
