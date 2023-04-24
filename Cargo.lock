@@ -30,6 +30,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "mebongo"
+version = "0.1.0"
+dependencies = [
+ "lazy_static",
+ "static_assertions",
+ "wasm-bindgen",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.17.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -68,15 +77,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "unicode-ident",
-]
-
-[[package]]
-name = "ubongo"
-version = "0.1.0"
-dependencies = [
- "lazy_static",
- "static_assertions",
- "wasm-bindgen",
 ]
 
 [[package]]
