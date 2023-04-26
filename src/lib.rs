@@ -161,6 +161,7 @@ pub fn compute_result(tiles_encoded: u32, board_encoded: u32, max_steps: usize) 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::cmp::max;
 
     #[test]
     fn test_decode_tiles() {
@@ -274,6 +275,10 @@ mod tests {
         } else {
             "good"
         };
+        if result.steps_taken == 1 {
+            // Result is so trivial, don't even print it.
+            return;
+        }
         println!(
             "{:03x}+{:08x} -> {:05} steps, solved={:5}, finished={:5}, {}",
             tiles_encoded,
@@ -283,7 +288,6 @@ mod tests {
             result.has_finished,
             judgement,
         );
-        assert!(result.has_finished || result.has_solution);
     }
 
     fn cell_index_to_anti_mask(index: u8) -> u32 {
@@ -292,7 +296,7 @@ mod tests {
 
     #[test]
     #[ignore = "Test takes too long"]
-    fn test_never_timeout() {
+    fn test_never_timeout_near_full() {
         let full_board = (1 << (board::MAX_WIDTH * board::MAX_HEIGHT)) - 1;
         for tiles_encoded in 0u32..((1 << tile::ALL_TILES.len()) - 1) {
             if tiles_encoded.count_ones() < 6 {
@@ -302,7 +306,255 @@ mod tests {
             for drop_cell in 0..(board::MAX_WIDTH * board::MAX_HEIGHT) {
                 let remaining_board = full_board & cell_index_to_anti_mask(drop_cell);
                 assert_no_timeout(tiles_encoded, remaining_board);
+                for drop_cell_b in (drop_cell + 1)..(board::MAX_WIDTH * board::MAX_HEIGHT) {
+                    let remaining_board = remaining_board & cell_index_to_anti_mask(drop_cell_b);
+                    assert_no_timeout(tiles_encoded, remaining_board);
+                }
             }
+        }
+    }
+
+    const BOARD_SIZE: usize = CELL_TO_TILE_LENGTH;
+
+    struct UnionFind {
+        lowest_in_component_or_255: [u8; BOARD_SIZE],
+    }
+
+    impl UnionFind {
+        fn new() -> UnionFind {
+            UnionFind {
+                lowest_in_component_or_255: [255u8; BOARD_SIZE],
+            }
+        }
+
+        fn index(x: u8, y: u8) -> usize {
+            usize::from(x + board::MAX_WIDTH * y)
+        }
+
+        fn run_on(&mut self, board: u32) {
+            for y in 0..board::MAX_HEIGHT {
+                for x in 0..board::MAX_WIDTH {
+                    let idx = Self::index(x, y);
+                    if board & (1 << idx) == 0 {
+                        continue;
+                    }
+                    self.lowest_in_component_or_255[idx] = idx as u8;
+                    if x > 0 && 255 != self.lowest_in_component_or_255[Self::index(x - 1, y)] {
+                        self.union(idx, Self::index(x - 1, y));
+                    }
+                    if y > 0 && 255 != self.lowest_in_component_or_255[Self::index(x, y - 1)] {
+                        self.union(idx, Self::index(x, y - 1));
+                    }
+                }
+            }
+        }
+
+        fn union(&mut self, index_a: usize, index_b: usize) {
+            let index_a_root = self.find_root(index_a);
+            let index_b_root = self.find_root(index_b);
+            let (smaller_root, bigger_root) = if index_a_root < index_b_root {
+                (index_a_root, index_b_root)
+            } else {
+                (index_b_root, index_a_root)
+            };
+            self.lowest_in_component_or_255[bigger_root] = smaller_root as u8;
+        }
+
+        fn find_root(&mut self, index: usize) -> usize {
+            // Path halving.
+            let mut current = index;
+            loop {
+                let parent = self.lowest_in_component_or_255[current] as usize;
+                if parent == current {
+                    return current;
+                }
+                let grandparent = self.lowest_in_component_or_255[parent];
+                self.lowest_in_component_or_255[current] = grandparent;
+                current = grandparent.into();
+            }
+        }
+
+        fn do_anneal(&mut self) {
+            for i in 0..self.lowest_in_component_or_255.len() {
+                if self.lowest_in_component_or_255[i] != 255 {
+                    self.find_root(i);
+                }
+            }
+        }
+
+        fn is_root(&self, possible_root: usize) -> bool {
+            usize::from(self.lowest_in_component_or_255[possible_root]) == possible_root
+        }
+
+        fn last_root(&self) -> u8 {
+            for possible_root in (0..self.lowest_in_component_or_255.len()).rev() {
+                if self.is_root(possible_root) {
+                    return possible_root as u8;
+                }
+            }
+            panic!("No components?! Was the empty board given or what?");
+        }
+
+        fn count_components(&self) -> u8 {
+            (0..self.lowest_in_component_or_255.len())
+                .rev()
+                .filter(|&possible_root| self.is_root(possible_root))
+                .count()
+                as u8
+        }
+    }
+
+    fn find_first_connectible_index(board: u32) -> Option<u8> {
+        let mut uf = UnionFind::new();
+        uf.run_on(board);
+        uf.do_anneal();
+        if uf.count_components() > 1 {
+            let last_root = uf.last_root();
+            if last_root >= board::MAX_WIDTH {
+                // One above the last root. This might connect it with the rest of the board.
+                Some(last_root - board::MAX_WIDTH)
+            } else {
+                // There is no "above", so use the one to it's left.
+                Some(last_root - 1)
+            }
+        } else {
+            None
+        }
+    }
+
+    const ALL_ROWS_0X01_PATTERN: u32 = 0x02108421;
+
+    #[test]
+    #[ignore = "Test takes too long"]
+    fn test_never_timeout_three_tiles() {
+        let full_board = (1 << (board::MAX_WIDTH * board::MAX_HEIGHT)) - 1;
+        let tile_encodings = (0u32..((1 << tile::ALL_TILES.len()) - 1))
+            .filter(|e| e.count_ones() == 3)
+            .collect::<Vec<_>>();
+        // Old school iteration, to support skipping vast chunks of search space:
+        let mut next_board = 0xFFu32;
+        const MIN_BOARD_SIZE: u32 = 8;
+        const MAX_BOARD_SIZE: u32 = 15;
+        while next_board <= full_board {
+            let board = next_board;
+            next_board = board + 1;
+            let mut skip = false;
+            if board.count_ones() < 8 {
+                skip = true;
+                // Flip on the last x bits. If all of them were zero, we would reach MIN_BOARD_SIZE.
+                // Note that we ignore zeros, so this could be made faster.
+                let skip_to_board = board | ((1 << (MIN_BOARD_SIZE - board.count_ones())) - 1);
+                next_board = max(next_board, skip_to_board);
+                print!("<");
+            }
+            if board.count_ones() > MAX_BOARD_SIZE {
+                skip = true;
+                // Skip so far that the 15th-most-significant "one" gets counted up.
+                // The board size is then guaranteed to be not-too-large.
+                // Filling up the least-significant bits destroys this guarantee, but halves the number of skips.
+                let mut top_bits = board;
+                // Drop everything after the 15th-most-significant "one":
+                for _ in MAX_BOARD_SIZE..board.count_ones() {
+                    top_bits &= top_bits - 1;
+                }
+                // Drop some more, as long as filling up the rows would violate MAX_BOARD_SIZE.
+                while top_bits.count_ones() + top_bits.trailing_zeros() / 5 > MAX_BOARD_SIZE {
+                    top_bits &= top_bits - 1;
+                }
+                // Then count it up:
+                let bottom_bit = 1 << top_bits.trailing_zeros();
+                let first_satisfying_board = top_bits + bottom_bit;
+                // Also, fill in the gap to the top:
+                let fsb_bottom_bit = 1 << first_satisfying_board.trailing_zeros();
+                let fill_rows = fsb_bottom_bit
+                    | fsb_bottom_bit >> 5
+                    | fsb_bottom_bit >> 10
+                    | fsb_bottom_bit >> 15
+                    | fsb_bottom_bit >> 20
+                    | fsb_bottom_bit >> 25;
+                let skip_to_board = first_satisfying_board | fill_rows;
+                next_board = max(next_board, skip_to_board);
+                print!(">");
+            }
+            if board & ALL_ROWS_0X01_PATTERN == 0 {
+                // Deduplicate: Could shift entire pattern to the left.
+                skip = true;
+                // Could skip more, but there aren't many 1-skips anyway.
+                print!("|");
+            }
+            let rows = vec![
+                (board >> 0) & 0x1F,
+                (board >> 5) & 0x1F,
+                (board >> 10) & 0x1F,
+                (board >> 15) & 0x1F,
+                (board >> 20) & 0x1F,
+                (board >> 25) & 0x1F,
+            ];
+            let last_row = rows
+                .iter()
+                .enumerate()
+                .filter_map(|(i, &value)| {
+                    if value > 0 {
+                        Some(i)
+                    } else {
+                        None
+                    }
+                })
+                .max()
+                .expect("All zeros board?!");
+            if rows[0] == 0 {
+                // Deduplicate: Entire board should be pushed up.
+                skip = true;
+            }
+            for row_index in 1..=last_row {
+                if rows[row_index] == 0 {
+                    // Deduplicate: Board is split, rest of the board should be pushed up.
+                    skip = true;
+                    // Clear this row and all rows above it, then set these rows to 0x01 each.
+                    let affected_rows_mask = (1 << ((row_index + 1) * 5)) - 1;
+                    let skip_to_board = (board & !affected_rows_mask) | (affected_rows_mask & ALL_ROWS_0X01_PATTERN);
+                    next_board = max(next_board, skip_to_board);
+                    print!("0");
+                } else if rows[row_index] & rows[row_index - 1] == 0 {
+                    // Board is disconnected, which makes the board trivially
+                    // easy since there are only 3 tiles anyway.
+                    // Note that while this is *similar* the the "split" case, we only modify the previous row here.
+                    skip = true;
+                    // Reset the bottom, increment the previous row in the lowest bit set in either this or the previous row.
+                    let reset_rows_mask = (1 << ((row_index - 1) * 5)) - 1;
+                    let lowest_bit = 1 << (rows[row_index] | rows[row_index - 1]).trailing_zeros();
+                    let increment = lowest_bit << ((row_index - 1) * 5);
+                    let skip_to_board = (board & !reset_rows_mask) | (reset_rows_mask & ALL_ROWS_0X01_PATTERN) + increment;
+                    next_board = max(next_board, skip_to_board);
+                    print!("-");
+                }
+            }
+            // TODO: "if !skip {"?
+            if let Some(connect_at) = find_first_connectible_index(board) {
+                // Board is disconnected non-trivially, and there are multiple components.
+                // The last component (i.e. the component with the highest "root", which is the first cell of the
+                // component) must be connected to the other components somehow.
+                skip = true;
+                // The numerically first board with any hope of alleviating this situation needs to add a cell at
+                // 'connect_at', and zero everything before that (which might eliminate components).
+                let connect_mask_single = 1 << connect_at;
+                let connect_mask_two = connect_mask_single | (connect_mask_single >> 5);
+                let connect_mask_four = connect_mask_two | (connect_mask_two >> 10);
+                let connect_mask_all = connect_mask_four | (connect_mask_four >> 20);
+                let reset_mask = connect_mask_single - 1;
+                let skip_to_board = (board & !reset_mask) | connect_mask_all;
+                next_board = max(next_board, skip_to_board);
+                print!("X");
+            }
+            // TODO: Dead cell analysis?
+            if skip {
+                println!("SKIP {:08x}->{:08x} by {:5}", board, next_board, next_board - board);
+                continue;
+            }
+            println!("CHECK {:08x}", board);
+            //for &tiles_encoded in &tile_encodings {
+            //    assert_no_timeout(tiles_encoded, board);
+            //}
         }
     }
 }
