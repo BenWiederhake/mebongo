@@ -264,4 +264,45 @@ mod tests {
             )
         );
     }
+
+    fn assert_no_timeout(tiles_encoded: u32, board_encoded: u32) {
+        // Use a stricter upper limit to find the threshold:
+        let result = compute_result(tiles_encoded, board_encoded, 10_000);
+        let did_timeout = !result.has_finished && !result.has_solution;
+        let judgement = if did_timeout {
+            "===BAD==="
+        } else {
+            "good"
+        };
+        println!(
+            "{:03x}+{:08x} -> {:05} steps, solved={:5}, finished={:5}, {}",
+            tiles_encoded,
+            board_encoded,
+            result.steps_taken,
+            result.has_solution,
+            result.has_finished,
+            judgement,
+        );
+        assert!(result.has_finished || result.has_solution);
+    }
+
+    fn cell_index_to_anti_mask(index: u8) -> u32 {
+        !(1 << (index as u32))
+    }
+
+    #[test]
+    #[ignore = "Test takes too long"]
+    fn test_never_timeout() {
+        let full_board = (1 << (board::MAX_WIDTH * board::MAX_HEIGHT)) - 1;
+        for tiles_encoded in 0u32..((1 << tile::ALL_TILES.len()) - 1) {
+            if tiles_encoded.count_ones() < 6 {
+                continue;
+            }
+            assert_no_timeout(tiles_encoded, full_board);
+            for drop_cell in 0..(board::MAX_WIDTH * board::MAX_HEIGHT) {
+                let remaining_board = full_board & cell_index_to_anti_mask(drop_cell);
+                assert_no_timeout(tiles_encoded, remaining_board);
+            }
+        }
+    }
 }
