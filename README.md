@@ -47,6 +47,7 @@ There are multiple places that can easily be sped up:
 - It's too easy to accidentally drag a page element (thereby not clicking it), or miss the label of the tile checkboxes. This gives the *impression* that the page is too slow to register an input. This should be fixed.
 - I'm pretty sure that the tail of `search::State::closed` can be dropped at the indicated time in `State::step_single`, but I didn't think about it too hard yet.
 - The tile and tile-layout orders imply search preferences. Does this need any tweaking?
+- If the dead cell detection proves that there is zero slack (i.e. number of cells covered by tiles plus dead cells equals to the number of cells on the board), then we could try to see if there are any cells that can only be covered by a single tile. Currently it doesn't "understand" this scenario, so this might be causing the trouble.
 
 ## TODOs
 

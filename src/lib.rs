@@ -445,7 +445,7 @@ mod tests {
                 // Note that we ignore zeros, so this could be made faster.
                 let skip_to_board = board | ((1 << (MIN_BOARD_SIZE - board.count_ones())) - 1);
                 next_board = max(next_board, skip_to_board);
-                print!("<");
+                //print!("<");
             }
             if board.count_ones() > MAX_BOARD_SIZE {
                 skip = true;
@@ -474,13 +474,7 @@ mod tests {
                     | fsb_bottom_bit >> 25;
                 let skip_to_board = first_satisfying_board | fill_rows;
                 next_board = max(next_board, skip_to_board);
-                print!(">");
-            }
-            if board & ALL_ROWS_0X01_PATTERN == 0 {
-                // Deduplicate: Could shift entire pattern to the left.
-                skip = true;
-                // Could skip more, but there aren't many 1-skips anyway.
-                print!("|");
+                //print!(">");
             }
             let rows = vec![
                 (board >> 0) & 0x1F,
@@ -490,6 +484,19 @@ mod tests {
                 (board >> 20) & 0x1F,
                 (board >> 25) & 0x1F,
             ];
+            if board & ALL_ROWS_0X01_PATTERN == 0 || rows[0] == 0 {
+                // Deduplicate: Could shift entire pattern up to the left.
+                skip = true;
+                // If both rows are zero, let the zero-row handler do the work, otherwise find the
+                // first possible connection from (0, 0) to the first or second row, and connect to there:
+                let connections = rows[0] | (rows[1] << 1);
+                if connections != 0 {
+                    let path = connections ^ (connections - 1);
+                    let skip_to_board = board | path;
+                    next_board = max(next_board, skip_to_board);
+                    //print!("\\");
+                }
+            }
             let last_row = rows
                 .iter()
                 .enumerate()
@@ -502,10 +509,6 @@ mod tests {
                 })
                 .max()
                 .expect("All zeros board?!");
-            if rows[0] == 0 {
-                // Deduplicate: Entire board should be pushed up.
-                skip = true;
-            }
             for row_index in 1..=last_row {
                 if rows[row_index] == 0 {
                     // Deduplicate: Board is split, rest of the board should be pushed up.
@@ -514,7 +517,7 @@ mod tests {
                     let affected_rows_mask = (1 << ((row_index + 1) * 5)) - 1;
                     let skip_to_board = (board & !affected_rows_mask) | (affected_rows_mask & ALL_ROWS_0X01_PATTERN);
                     next_board = max(next_board, skip_to_board);
-                    print!("0");
+                    //print!("0");
                 } else if rows[row_index] & rows[row_index - 1] == 0 {
                     // Board is disconnected, which makes the board trivially
                     // easy since there are only 3 tiles anyway.
@@ -526,7 +529,7 @@ mod tests {
                     let increment = lowest_bit << ((row_index - 1) * 5);
                     let skip_to_board = (board & !reset_rows_mask) | (reset_rows_mask & ALL_ROWS_0X01_PATTERN) + increment;
                     next_board = max(next_board, skip_to_board);
-                    print!("-");
+                    //print!("-");
                 }
             }
             // TODO: "if !skip {"?
@@ -544,11 +547,11 @@ mod tests {
                 let reset_mask = connect_mask_single - 1;
                 let skip_to_board = (board & !reset_mask) | connect_mask_all;
                 next_board = max(next_board, skip_to_board);
-                print!("X");
+                //print!("X");
             }
             // TODO: Dead cell analysis?
             if skip {
-                println!("SKIP {:08x}->{:08x} by {:5}", board, next_board, next_board - board);
+                //println!("SKIP {:08x}->{:08x} by {:5}", board, next_board, next_board - board);
                 continue;
             }
             println!("CHECK {:08x}", board);
